@@ -2,15 +2,25 @@ package com.me.whiteship.demoinflearnrestapi.events;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import lombok.*;
 
 @Builder @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter @EqualsAndHashCode(of = "id")
+@Entity
 public class Event {
 	
+	@Id @GeneratedValue
 	private Integer id;
 	private String name;
 	private String description;
+	
+	// localDateTime 자동 mapping
 	private LocalDateTime beginEnrollmentDateTime;
 	private LocalDateTime closeEnrollmentDateTime;
 	private LocalDateTime beginEventDateTime;
@@ -21,6 +31,8 @@ public class Event {
 	private int limitOfEnrollment;
 	private boolean offline;
 	private boolean free;
+	
+	@Enumerated(EnumType.STRING)
 	private EventStatus eventStatus;
 	
 }
