@@ -35,8 +35,7 @@ public class EventControllerTests {
 		
 	@Test
 	public void createEvent() throws Exception {
-		Event event = Event.builder()
-						.id(100)
+		EventDto event = EventDto.builder()
 						.name("Spring")
 						.description("REST API development with Spring")
 						.beginEnrollmentDateTime(LocalDateTime.of(2021, 07, 8, 14, 21))
@@ -47,9 +46,6 @@ public class EventControllerTests {
 						.maxPrice(200)
 						.limitOfEnrollment(100)
 						.location("강남역 D2 스타텁 팩토리")
-						.free(true)
-						.offline(false)
-						.eventStatus(EventStatus.PUBLISHED)
 						.build();
 		
 		mockMvc.perform(post("/api/events/")
@@ -63,7 +59,34 @@ public class EventControllerTests {
 				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE)) // 해당 헤더에 특정한 값이 나오는지 확인
 				.andExpect(jsonPath("id").value(IsNot.not(100))) 
 				.andExpect(jsonPath("free").value(IsNot.not(true))) 
-				.andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
-				;
+				.andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()));
+	}
+	
+	@Test
+	public void createEvent_Bad_Request() throws Exception {
+		Event event = Event.builder()
+				.id(100)
+				.name("Spring")
+				.description("REST API development with Spring")
+				.beginEnrollmentDateTime(LocalDateTime.of(2021, 07, 8, 14, 21))
+				.closeEnrollmentDateTime(LocalDateTime.of(2021, 07, 9, 14, 21))
+				.beginEventDateTime(LocalDateTime.of(2021, 07, 10, 14, 21))
+				.endEventDateTime(LocalDateTime.of(2021, 07, 11, 14, 21))
+				.basePrice(100)
+				.maxPrice(200)
+				.limitOfEnrollment(100)
+				.location("강남역 D2 스타텁 팩토리")
+				.free(true)
+				.offline(false)
+				.eventStatus(EventStatus.PUBLISHED)
+				.build();
+		
+		mockMvc.perform(post("/api/events/")
+				.contentType(MediaType.APPLICATION_JSON_UTF8)// 본문에 json을 보내고 있다.
+				.accept(MediaTypes.HAL_JSON) // 원하는 응답 형식
+				.content(objectMapper.writeValueAsString(event))) // 본문
+				.andDo(print()) // 실제 응답값을 보고싶을 떼
+				.andExpect(status().isBadRequest()) // 400 응답 예상
+		;
 	}
 }
