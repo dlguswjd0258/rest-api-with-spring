@@ -89,4 +89,35 @@ public class EventControllerTests {
 				.andExpect(status().isBadRequest()) // 400 응답 예상
 		;
 	}
+	
+	@Test
+	public void creatEvent_Bad_Request_Empty_Input() throws Exception {
+		EventDto eventDto = EventDto.builder().build();
+		
+		this.mockMvc.perform(post("/api/events")
+						.contentType(MediaType.APPLICATION_JSON_UTF8)// 본문에 json을 보내고 있다.
+						.content(objectMapper.writeValueAsString(eventDto))) // 원하는 응답 형식
+					.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void creatEvent_Bad_Request_Wrong_Input() throws Exception {
+		EventDto eventDto = EventDto.builder()
+							.name("Spring")
+							.description("REST API development with Spring")
+							.beginEnrollmentDateTime(LocalDateTime.of(2021, 07, 9, 14, 21))
+							.closeEnrollmentDateTime(LocalDateTime.of(2021, 07, 8, 14, 21))
+							.beginEventDateTime(LocalDateTime.of(2021, 07, 11, 14, 21))
+							.endEventDateTime(LocalDateTime.of(2021, 07, 10, 14, 21))
+							.basePrice(10000)
+							.maxPrice(200)
+							.limitOfEnrollment(100)
+							.location("강남역 D2 스타텁 팩토리")
+							.build();
+		
+		this.mockMvc.perform(post("/api/events")
+				.contentType(MediaType.APPLICATION_JSON_UTF8)// 본문에 json을 보내고 있다.
+				.content(objectMapper.writeValueAsString(eventDto))) // 원하는 응답 형식
+		.andExpect(status().isBadRequest());
+	}
 }
