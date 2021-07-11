@@ -123,6 +123,13 @@ public class EventControllerTests {
 		this.mockMvc.perform(post("/api/events")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)// 본문에 json을 보내고 있다.
 				.content(objectMapper.writeValueAsString(eventDto))) // 원하는 응답 형식
-		.andExpect(status().isBadRequest());
+				.andDo(print())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$[0].objectName").exists()) // 에러배열에서 객체이름 확인
+				.andExpect(jsonPath("$[0].field").exists()) // 어떤 field에서 발생했는지
+				.andExpect(jsonPath("$[0].defaultMessage").exists()) // 기본 메시지는 무엇인지
+				.andExpect(jsonPath("$[0].code").exists()) // 에러 코드가 무엇인지
+				.andExpect(jsonPath("$[0].rejectedValue").exists()) // 에러가 발생된 값이 무엇인지
+				;
 	}
 }
